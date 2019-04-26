@@ -49,13 +49,9 @@ public class FrameBuilder extends Frame {
         JFileChooser fc = new JFileChooser();
         @Override
         public void actionPerformed(ActionEvent e) {
-            //FileChooserDemo fileChooserDemo = new FileChooserDemo();
             int returnVal = fc.showOpenDialog(new FileChooserDemo());
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                //file = ;
                 fileField.setText(fc.getSelectedFile().getAbsolutePath());
-                //This is where a real application would open the file.
-                //System.out.println("Opening: " + file.getName() + ".");
             } else {
                 System.out.println("Open command cancelled by user.");
             }
