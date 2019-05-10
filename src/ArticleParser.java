@@ -5,6 +5,7 @@ public abstract class ArticleParser {
        File parsedFile = new File(articleFile.getAbsolutePath().substring(0,
                articleFile.getAbsolutePath().length() - articleFile.getName().length())
                + "parsed_" + articleFile.getName());
+       char previousChar = ' ';
        try {
            String line;
            BufferedReader articleReader = new BufferedReader(new FileReader(articleFile));
@@ -12,17 +13,13 @@ public abstract class ArticleParser {
            while ((line = articleReader.readLine()) != null) {
                for (int i = 0; i < line.length(); i++) {
                    char a = line.charAt(i);
-                   //Character b = new Character();
-                   if (!Character.isLetter(a) && a != '’' && a != '-' )
+                   if (previousChar == ' ' && a == '-' || !Character.isLetter(a) && a != '’' && a != '-')
                        line = line.replace(a,' ');
-                   /*
-                   if (!((a > 64 && a < 90) || (a > 95 && a < 123) || a == '’' || a == '-' || Character.isLetter(a))) {
-                       line = line.replace(a,' ');
-                   }*/
+                   previousChar = a;
                }
                for (String token : line.split(" ")) {
                    if (!token.equals("")) {
-                       articleWriter.write(token.toLowerCase() + "\n");
+                       articleWriter.write(token.toLowerCase().trim() + "\n");
                    }
                }
            }

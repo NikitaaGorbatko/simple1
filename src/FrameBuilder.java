@@ -8,7 +8,6 @@ public class FrameBuilder extends Frame {
     private JFrame frame;
     private JLabel fileLabel;
     private JTextField fileField;
-    private File file;
 
     FrameBuilder(String name) {
         Font font = new Font("", Font.BOLD, 15);

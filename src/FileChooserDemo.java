@@ -2,7 +2,6 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.SwingUtilities;
 
 public class FileChooserDemo extends JPanel {
     static private final String newline = "\n";
