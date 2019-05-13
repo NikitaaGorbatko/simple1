@@ -10,7 +10,7 @@ public class FrameBuilder extends Frame {
     private JTextField fileField;
 
     FrameBuilder(String name) {
-        Font font = new Font("", Font.BOLD, 15);
+        Font font = new Font("", Font.BOLD, 15);//
         frame = new JFrame(name);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(370,150);

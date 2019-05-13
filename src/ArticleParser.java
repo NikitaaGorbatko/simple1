@@ -5,7 +5,7 @@ public abstract class ArticleParser {
        File parsedFile = new File(articleFile.getAbsolutePath().substring(0,
                articleFile.getAbsolutePath().length() - articleFile.getName().length())
                + "parsed_" + articleFile.getName());
-       char previousChar = ' ';
+       //char previousChar = ' ';
        try {
            String line;
            BufferedReader articleReader = new BufferedReader(new FileReader(articleFile));
@@ -13,9 +13,9 @@ public abstract class ArticleParser {
            while ((line = articleReader.readLine()) != null) {
                for (int i = 0; i < line.length(); i++) {
                    char a = line.charAt(i);
-                   if (previousChar == ' ' && a == '-' || !Character.isLetter(a) && a != '’' && a != '-')
+                   if (!Character.isLetter(a) && a != '’')
                        line = line.replace(a,' ');
-                   previousChar = a;
+                   //previousChar = a;
                }
                for (String token : line.split(" ")) {
                    if (!token.equals("")) {
