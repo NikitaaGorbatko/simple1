@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 
 public class PostgresJuggler {
     private final String url = "jdbc:postgresql://localhost/postgres?user=postgres&password=1";
@@ -19,29 +20,28 @@ public class PostgresJuggler {
         if (statement.isClosed()) {
             statement = connection.createStatement();
         }
+        //connection.setAutoCommit(false);
         statement.execute("INSERT INTO topics (top) VALUES ('" + topicName +"')");
         statement.close();
         return true;
     }
 
-    public String[] getTopics() throws SQLException {
+    public ArrayList<String> getTopics() throws SQLException {
         if (statement.isClosed()) {
             statement = connection.createStatement();
         }
         connection.setAutoCommit(false);
-        String[] wordArray = {};
-        int counter = -1;
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM topics;");
+        ArrayList<String> topicsArrayList = new ArrayList<>();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM public.topics;");
         while (resultSet.next())
         {
-            wordArray[counter++] = resultSet.getNString(0);
-            System.out.print(wordArray[counter]);
+            topicsArrayList.add(resultSet.getString(1));
         }
+        connection.setAutoCommit(true);
         resultSet.close();
         statement.close();
-        return wordArray;
+        return topicsArrayList;
     }
-
 
     public void createTables() throws SQLException {
         if (statement.isClosed()) {

@@ -7,7 +7,6 @@ public class FileChooserDemo extends JPanel {
     static private final String newline = "\n";
     private JButton openButton, saveButton;
     private JTextArea log;
-    //private JFileChooser fc;
 
     public FileChooserDemo() {
         super(new BorderLayout());
@@ -15,10 +14,6 @@ public class FileChooserDemo extends JPanel {
         log.setMargin(new Insets(5,5,5,5));
         log.setEditable(false);
         JScrollPane logScrollPane = new JScrollPane(log);
-        //fc = new JFileChooser();
-        //fc.setMultiSelectionEnabled(true);
-        //fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        //fc.setControlButtonsAreShown(Boolean.FALSE);
         openButton = new JButton("Open a File...");
         openButton.addActionListener(new OpenBtnClick());
         saveButton = new JButton("Save a File...");
@@ -33,14 +28,6 @@ public class FileChooserDemo extends JPanel {
 
     class FileValChecker {
         protected File checkFileVal() {
-            //int returnVal = fc.showOpenDialog(FileChooserDemo.this);
-            //File file = null;
-            ///if (returnVal == JFileChooser.APPROVE_OPTION) {
-            //    file = fc.getSelectedFile();
-            //    System.out.println("Opening: " + file.getName() + "." + newline);
-            //} else {
-            //    System.out.println("Open command cancelled by user." + newline);
-            //}
             return null;
         }
     }
@@ -58,22 +45,4 @@ public class FileChooserDemo extends JPanel {
             File file = checkFileVal();
         }
     }
-
-
-    /*private static void createAndShowGUI() {
-        JFrame frame = new JFrame("FileChooserDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new FileChooserDemo());
-        frame.pack();
-        frame.setVisible(true);
-    }*/
-
-    /*public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                UIManager.put("swing.boldMetal", Boolean.FALSE);
-                createAndShowGUI();
-            }
-        });
-    }*/
 }
