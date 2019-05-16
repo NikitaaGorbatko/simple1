@@ -5,7 +5,6 @@ public abstract class ArticleParser {
        File parsedFile = new File(articleFile.getAbsolutePath().substring(0,
                articleFile.getAbsolutePath().length() - articleFile.getName().length())
                + "parsed_" + articleFile.getName());
-       //char previousChar = ' ';
        try {
            String line;
            BufferedReader articleReader = new BufferedReader(new FileReader(articleFile));
@@ -15,11 +14,11 @@ public abstract class ArticleParser {
                    char a = line.charAt(i);
                    if (!Character.isLetter(a) && a != '’')
                        line = line.replace(a,' ');
-                   //previousChar = a;
                }
                for (String token : line.split(" ")) {
-                   if (!token.equals("")) {
-                       articleWriter.write(token.toLowerCase().trim() + "\n");
+                   if (!token.equals("") && token.length() > 3) {
+                       articleWriter.write(" statement.execute(\"INSERT INTO Languages (lang)\\n\" +\n" +
+                               "\" VALUES ('" + token.toLowerCase().trim() +"'); \\n\");" + "\n");
                    }
                }
            }
