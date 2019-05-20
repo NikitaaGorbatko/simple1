@@ -129,7 +129,7 @@ public class FrameBuilder extends Frame {
         public void actionPerformed(ActionEvent e) {
             String fileDirection = fileField.getText();
             try {
-                final String parsedFileString = ArticleParser.parseArticle(new File(fileDirection)).getAbsolutePath();
+                final String parsedFileString = ArticleParser.parseArticle(new File(fileDirection), postgresJuggler, "").getAbsolutePath();
                 String osDependentCommand = "";
                 switch (System.getProperty("os.name").toLowerCase()) {
                     case "windows":

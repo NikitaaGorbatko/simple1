@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainForm extends JFrame {
     private JPanel panel1;
@@ -71,7 +72,8 @@ public class MainForm extends JFrame {
                 System.out.println("Open command was cancelled by user.");
             }
             try {
-                final String parsedFileString = ArticleParser.parseArticle(new File(fileDirection)).getAbsolutePath();
+                List<String> languageBaseList = new ArrayList<>();
+                final String parsedFileString = ArticleParser.parseArticle(new File(fileDirection), postgresJuggler, languagesBox.getSelectedItem().toString()).getAbsolutePath();
                 String osDependentCommand = "";
                 switch (System.getProperty("os.name").toLowerCase()) {
                     case "windows":
@@ -111,20 +113,19 @@ public class MainForm extends JFrame {
     class OnSaveBtn implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String language = (String) languagesBox.getSelectedItem();
-            String name = nameField.getText();
-            String description = descriptionField.getText();
-            int cost = Integer.valueOf(costField.getText());
-            String topic = (String) topicsBox.getSelectedItem();
-            System.out.println("\nlanguage: " + language + "\nname: " + name + "\ndescription: " + description + "\ncost: " + cost + "\ntopic: " + topic);
             try {
+                String language = (String) languagesBox.getSelectedItem();
+                String name = nameField.getText();
+                String description = descriptionField.getText();
+                int cost = Integer.valueOf(costField.getText());
+                String topic = (String) topicsBox.getSelectedItem();
+                System.out.println("\nlanguage: " + language + "\nname: " + name + "\ndescription: " + description + "\ncost: " + cost + "\ntopic: " + topic);
                 postgresJuggler.createNewSet(language, topic, name, description, ArticleParser.readFile(fileField.getText()), cost);
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
-
         }
     }
 

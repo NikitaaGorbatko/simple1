@@ -1,11 +1,12 @@
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class ArticleParser {
     final static String PARSED_FILE_PREFIX = "parsed_";
 
-    public static File parseArticle(File articleFile) throws IOException {
+    public static File parseArticle(File articleFile, PostgresJuggler postgresJuggler, String language) throws IOException {
        File parsedFile = new File(articleFile.getAbsolutePath().substring(0,
                articleFile.getAbsolutePath().length() - articleFile.getName().length())
                + PARSED_FILE_PREFIX + articleFile.getName());
@@ -31,11 +32,15 @@ public abstract class ArticleParser {
        }
        wordList = removeDuplicates(wordList);
 
-       for (String waiter : wordList) {
-           articleWriter.write(waiter + "\n");
-       }
-       List<String> list2 = new ArrayList<>();
-       removeDublicates(wordList, list2);
+
+        try {
+            wordList = removeDublicates(wordList, postgresJuggler.getBaseWordBlock(language));
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        for (String waiter : wordList) {
+            articleWriter.write(waiter + "\n");
+        }
        articleWriter.flush();
        articleReader.close();
        articleWriter.close();
@@ -71,15 +76,14 @@ public abstract class ArticleParser {
         for (String waiter : wordList) {
             wordsArray.add(waiter);
         }
-
         return wordsArray;
-
     }
+
     private static List<String> removeDublicates(List<String> base, List<String> subtrahend) {
         base = base.stream().distinct().collect(Collectors.toList());
         base.removeAll(subtrahend);
-        for (String waiter : base) {
-            System.out.println(waiter);//apparently works!! this overloaded method is for erasing all mathses from lists.
+        for (String waiter : subtrahend) {
+            System.out.println(waiter + "\n");//apparently works!! this overloaded method is for erasing all mathses from lists.
         }
         return base;
     }

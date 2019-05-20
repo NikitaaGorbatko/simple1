@@ -72,7 +72,7 @@ public class PostgresJuggler {
             "word_set_id SERIAL PRIMARY KEY,\n" +
             "lang_id VARCHAR(100) REFERENCES languages(lang),\n" +
             "topic_id VARCHAR(100) REFERENCES topics(top),\n" +
-            "name VARCHAR(120) NOT NULL,\n" +
+            "name VARCHAR(120) UNIQUE NOT NULL,\n" +
             "description VARCHAR(250) UNIQUE NOT NULL,\n" +
             "data TEXT[] NOT NULL,\n" +
             "cost INTEGER);\n");
@@ -84,11 +84,21 @@ public class PostgresJuggler {
         statement.close();
     }
 
-    public void getBaseWordBlock(String language) throws SQLException {
+    public List<String> getBaseWordBlock(String language) throws SQLException {
         if (statement.isClosed()) {
             statement = connection.createStatement();
         }
-        statement.executeQuery("SELECT data");
+        connection.setAutoCommit(false);
+        List<String> baseOfLanguage = new ArrayList<>();
+        ResultSet resultSet = statement.executeQuery("SELECT unnest(data) FROM word_sets WHERE lang_id LIKE '" + language + "' AND topic_id LIKE 'base';");
+        while (resultSet.next())
+        {
+            baseOfLanguage.add(resultSet.getString(1));
+        }
+        connection.setAutoCommit(true);
+        resultSet.close();
+        statement.close();
+        return baseOfLanguage;
     }
 
     public boolean createNewSet(String language, String topic, String name, String description, ArrayList<String> data, int cost) throws SQLException {
