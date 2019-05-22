@@ -1,12 +1,16 @@
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class MainForm extends JFrame {
     private JPanel panel1;
@@ -21,11 +25,13 @@ public class MainForm extends JFrame {
     private JButton saveSetButton;
     private JTextField nameField;
     private JTextField descriptionField;
+    private JButton runServerButton;
+    private JTextPane messagePane;
     private PostgresJuggler postgresJuggler;
 
     MainForm(PostgresJuggler postgresJuggler) {
         this.postgresJuggler = postgresJuggler;
-        setTitle("asfd");
+        setTitle("Manager");
         setSize(370, 310);
         add(panel1);
         setResizable(false);
@@ -35,14 +41,8 @@ public class MainForm extends JFrame {
         int y = (int) ((dimension.getHeight() - getHeight()) / 2);
         setLocation(x, y);
         try {
-            ArrayList<String> languages = postgresJuggler.getLanguages();
-            for (String language : languages) {
-                languagesBox.addItem(language);
-            }
-            ArrayList<String> topics = postgresJuggler.getTopics();
-            for (String topic : topics) {
-                topicsBox.addItem(topic);
-            }
+            languagesBox = setBoxFromDB(postgresJuggler.getLanguages());
+            topicsBox = setBoxFromDB(postgresJuggler.getTopics());
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -51,6 +51,15 @@ public class MainForm extends JFrame {
         parseFileButton.addActionListener(new OnParseBtnClick());
         addTopicBtn.addActionListener(new OnAddTopicBtnCLick());
         saveSetButton.addActionListener(new OnSaveBtn());
+        runServerButton.addActionListener(new OnRunServerBtnClick());
+    }
+
+    private JComboBox setBoxFromDB(ArrayList<String> list) {
+        JComboBox box = new JComboBox();
+        for (String language : list) {
+            box.addItem(language);
+        }
+        return box;
     }
 
     class OnLanguageBox implements ActionListener {
@@ -72,7 +81,6 @@ public class MainForm extends JFrame {
                 System.out.println("Open command was cancelled by user.");
             }
             try {
-                List<String> languageBaseList = new ArrayList<>();
                 final String parsedFileString = ArticleParser.parseArticle(new File(fileDirection), postgresJuggler, languagesBox.getSelectedItem().toString()).getAbsolutePath();
                 String osDependentCommand = "";
                 switch (System.getProperty("os.name").toLowerCase()) {
@@ -119,8 +127,8 @@ public class MainForm extends JFrame {
                 String description = descriptionField.getText();
                 int cost = Integer.valueOf(costField.getText());
                 String topic = (String) topicsBox.getSelectedItem();
-                System.out.println("\nlanguage: " + language + "\nname: " + name + "\ndescription: " + description + "\ncost: " + cost + "\ntopic: " + topic);
-                postgresJuggler.createNewSet(language, topic, name, description, ArticleParser.readFile(fileField.getText()), cost);
+                boolean wasCreated = postgresJuggler.createNewSet(language, topic, name, description, ArticleParser.readFile(fileField.getText()), cost);
+                System.out.println("\nlanguage: " + language + "\nname: " + name + "\ndescription: " + description + "\ncost: " + cost + "\ntopic: " + topic + "\ncreated: " + wasCreated);
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
             } catch (IOException ex) {
@@ -129,4 +137,57 @@ public class MainForm extends JFrame {
         }
     }
 
+    class OnRunServerBtnClick implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Runnable threadServerRunnable = new ServerRunnable();
+            Thread serverThread = new Thread(threadServerRunnable);
+            serverThread.start();
+        }
+    }
+
+
+    class ServerRunnable implements Runnable {
+
+        private ServerSocket serverSocket;
+        private BufferedReader incomingReader;
+        private BufferedWriter outgoingWriter;
+
+        @Override
+        public synchronized void run() {
+            try {
+                serverSocket = new ServerSocket(4004);
+                messagePane.setText("Сервер запущен!");
+                    while (true) {
+                        Socket socket = serverSocket.accept();
+                        incomingReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        outgoingWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                        int a = incomingReader.read();
+                        if (a == 2) {
+                            //postgresJuggler.get
+                        } else {
+                            List<String> languages = postgresJuggler.getLanguages();
+                            for (String language : languages) {
+                                outgoingWriter.write( language + "\n");
+                                System.out.println(language);
+                            }
+                            outgoingWriter.flush();
+                            outgoingWriter.close();
+                        }
+                    }
+            } catch (IOException e) {
+                System.err.println(e);
+            } catch (SQLException ex) {
+                System.err.println(ex);
+            } finally {
+                try {
+                    messagePane.setText("Сервер закрыт!");
+                    serverSocket.close();
+                } catch (IOException ex) {
+                    System.err.println(ex);
+                }
+
+            }
+        }
+    }
 }

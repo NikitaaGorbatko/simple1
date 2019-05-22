@@ -13,18 +13,14 @@ public class PostgresJuggler {
     }
 
     public boolean createNewTopic(String topicName) throws SQLException {
-        if (statement.isClosed()) {
-            statement = connection.createStatement();
-        }
+        checkStatement();
         statement.execute("INSERT INTO topics (top) VALUES ('" + topicName +"')");
         statement.close();
         return true;
     }
 
     public ArrayList<String> getTopics() throws SQLException {
-        if (statement.isClosed()) {
-            statement = connection.createStatement();
-        }
+        checkStatement();
         connection.setAutoCommit(false);
         ArrayList<String> topicsArrayList = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM public.topics;");
@@ -39,9 +35,7 @@ public class PostgresJuggler {
     }
 
     public ArrayList<String> getLanguages() throws SQLException {
-        if (statement.isClosed()) {
-            statement = connection.createStatement();
-        }
+        checkStatement();
         connection.setAutoCommit(false);
         ArrayList<String> topicsArrayList = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM public.languages;");
@@ -56,9 +50,7 @@ public class PostgresJuggler {
     }
 
     public void createTables() throws SQLException {
-        if (statement.isClosed()) {
-            statement = connection.createStatement();
-        }
+        checkStatement();
 
         statement.execute("CREATE TABLE IF NOT EXISTS languages (" +
                 "lang VARCHAR(100) PRIMARY KEY);\n");
@@ -85,9 +77,7 @@ public class PostgresJuggler {
     }
 
     public List<String> getBaseWordBlock(String language) throws SQLException {
-        if (statement.isClosed()) {
-            statement = connection.createStatement();
-        }
+        checkStatement();
         connection.setAutoCommit(false);
         List<String> baseOfLanguage = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("SELECT unnest(data) FROM word_sets WHERE lang_id LIKE '" + language + "' AND topic_id LIKE 'base';");
@@ -101,17 +91,44 @@ public class PostgresJuggler {
         return baseOfLanguage;
     }
 
-    public boolean createNewSet(String language, String topic, String name, String description, ArrayList<String> data, int cost) throws SQLException {
+    public void getWordBlocks() throws SQLException {
+        checkStatement();
+        connection.setAutoCommit(false);
+        List<String> baseOfLanguage = new ArrayList<>();
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM word_sets;");
+        while (resultSet.next())
+        {
+            System.out.println(resultSet.getString(1));
+            System.out.println(resultSet.getString(2));
+            System.out.println(resultSet.getString(3));
+            System.out.println(resultSet.getString(4));
+            System.out.println(resultSet.getString(5));
+            System.out.println(resultSet.getString(6));
+            System.out.println(resultSet.getString(7));
+            //baseOfLanguage.add(resultSet.getString(1));
+        }
+        connection.setAutoCommit(true);
+        resultSet.close();
+        statement.close();
+        //return baseOfLanguage;
+    }
+
+    private void checkStatement() throws SQLException {
         if (statement.isClosed()) {
             statement = connection.createStatement();
         }
+    }
+
+    public boolean createNewSet(String language, String topic, String name, String description, List<String> data, int cost) throws SQLException {
+        checkStatement();
         String dataString = "{";
         for (String base : data) {
             dataString += "\"" + base + "\",";
         }
         dataString = dataString.substring(0, dataString.length() - 1);
         dataString += "}";
-        boolean a = statement.execute("INSERT INTO word_sets (lang_id, topic_id, name, description, data, cost) VALUES ('" + language + "', '" + topic + "', '" + name + "', '" + description +"', '" + dataString + "', '" + cost + "');");
-        return a;
+        boolean done = statement.execute("INSERT INTO word_sets (lang_id, topic_id, name, description, data, cost) VALUES ('" + language + "', '" + topic + "', '" + name + "', '" + description +"', '" + dataString + "', '" + cost + "');");
+        statement.close();
+        return done;
     }
 }
