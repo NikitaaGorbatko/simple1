@@ -21,7 +21,7 @@ public class Main {
         try {
             PostgresJuggler pj = new PostgresJuggler();
             //pj.createTables();
-            pj.getWordBlocks();
+            //pj.getWordBlocks();
 
         } catch (SQLException ex) {
             System.out.println("\nConnection is failed\nError: " + ex.getMessage() + "\nAsk the administrator for help.");

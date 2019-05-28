@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import dummy.DummyItem;
 
 public class PostgresJuggler {
     private final String URL = "jdbc:postgresql://localhost/postgres?user=postgres&password=1";
@@ -91,26 +92,25 @@ public class PostgresJuggler {
         return baseOfLanguage;
     }
 
-    public void getWordBlocks() throws SQLException {
+    public List<DummyItem> getWordBlocks() throws SQLException {
         checkStatement();
         connection.setAutoCommit(false);
-        List<String> baseOfLanguage = new ArrayList<>();
+        List<DummyItem> wordBlocks = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM word_sets;");
         while (resultSet.next())
         {
-            System.out.println(resultSet.getString(1));
-            System.out.println(resultSet.getString(2));
-            System.out.println(resultSet.getString(3));
-            System.out.println(resultSet.getString(4));
-            System.out.println(resultSet.getString(5));
-            System.out.println(resultSet.getString(6));
-            System.out.println(resultSet.getString(7));
-            //baseOfLanguage.add(resultSet.getString(1));
+            String[] strings = {"hello", "goodbye"};//заглушка
+            wordBlocks.add(new DummyItem(resultSet.getString(1),
+                    resultSet.getString(4),
+                    resultSet.getString(5),
+                    resultSet.getInt(7),
+                    resultSet.getString(2),
+                    strings/*6*/));
         }
         connection.setAutoCommit(true);
         resultSet.close();
         statement.close();
-        //return baseOfLanguage;
+        return wordBlocks;
     }
 
     private void checkStatement() throws SQLException {

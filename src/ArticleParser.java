@@ -21,9 +21,9 @@ public abstract class ArticleParser {
        }
        for (String waiter : wordList)
            articleWriter.write(waiter + "\n");
-       articleWriter.flush();
-       articleReader.close();
+       //articleWriter.flush();
        articleWriter.close();
+       articleReader.close();
        return parsedFile;
     }
 
