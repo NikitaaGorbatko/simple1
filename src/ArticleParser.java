@@ -45,6 +45,18 @@ public abstract class ArticleParser {
         return list;
     }
 
+    public static ArrayList<String> retrieveWordsFromDB(String line) throws IOException {
+        ArrayList<String> list = new ArrayList<>();
+        line = line.substring(1, line.length() - 1);
+        for (String token : line.split(" ")) {
+            if (!token.equals("")) {
+                list.add(token.toLowerCase());
+            }
+        }
+        return list;
+    }
+
+
     public static List<String> readFile(String fileDirection) throws IOException{
         File file = new File(fileDirection);
         BufferedReader articleReader = new BufferedReader(new FileReader(file));

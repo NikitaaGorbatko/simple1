@@ -20,7 +20,7 @@ public class Main {
 
         try {
             PostgresJuggler pj = new PostgresJuggler();
-            //pj.createTables();
+            pj.createTables();
             //pj.getWordBlocks();
 
         } catch (SQLException ex) {

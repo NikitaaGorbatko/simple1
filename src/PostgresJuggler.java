@@ -1,3 +1,4 @@
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,10 +71,6 @@ public class PostgresJuggler {
             "data TEXT[] NOT NULL,\n" +
             "cost INTEGER);\n");
 
-        statement.execute("INSERT INTO word_sets (lang_id, topic_id, name, description, data, cost) " +
-                "VALUES ('english', (SELECT top FROM topics WHERE top='dancing'), 'english baseg', 'english base descriptiofdfdn', '{\"apple\"," +
-                "\"hello\", \"goodbye\", \"hi\", \"go\"}', 150);");
-
         statement.close();
     }
 
@@ -99,13 +96,13 @@ public class PostgresJuggler {
         ResultSet resultSet = statement.executeQuery("SELECT * FROM word_sets;");
         while (resultSet.next())
         {
-            String[] strings = {"hello", "goodbye"};//заглушка
             wordBlocks.add(new DummyItem(resultSet.getString(1),
                     resultSet.getString(4),
                     resultSet.getString(5),
+                    resultSet.getString(3),
                     resultSet.getInt(7),
                     resultSet.getString(2),
-                    strings/*6*/));
+                    resultSet.getString(6)));
         }
         connection.setAutoCommit(true);
         resultSet.close();

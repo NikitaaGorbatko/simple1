@@ -171,6 +171,7 @@ public class MainForm extends JFrame {
         private static final String ID_KEY = "id";
         private static final String NAME_KEY = "name";
         private static final String DESCRIPTION_KEY = "description";
+        private static final String TOPIC_KEY = "topic";
         private static final String LANGUAGE_KEY = "language";
         private static final String COST_KEY = "cost";
         private static final String DATA_KEY = "data";
@@ -184,43 +185,44 @@ public class MainForm extends JFrame {
             try {
                 serverSocket = new ServerSocket(4004);
                 messagePane.setText("Сервер запущен!");
-                    while (true) {
-                        Socket socket = serverSocket.accept();
-                        incomingReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        outgoingWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                        while(!incomingReader.ready()) { }
-                        switch (incomingReader.read()) {
-                            case SEND_BLOCKS:
-                                JSONArray jsonArray = new JSONArray();
-                                List<DummyItem> wordBlocks = postgresJuggler.getWordBlocks();
-                                for (DummyItem localDummy : wordBlocks) {
-                                    JSONObject jsonObject = new JSONObject();
-                                    jsonObject.put(ID_KEY, localDummy.id);
-                                    jsonObject.put(NAME_KEY, localDummy.name);
-                                    jsonObject.put(DESCRIPTION_KEY, localDummy.description);
-                                    jsonObject.put(LANGUAGE_KEY, localDummy.language);
-                                    jsonObject.put(COST_KEY, localDummy.cost);
-                                    jsonObject.put(DATA_KEY, localDummy.data);
-                                    jsonArray.put(jsonObject);
+                while (true) {
+                    Socket socket = serverSocket.accept();
+                    incomingReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    outgoingWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    while(!incomingReader.ready()) { }
+                    switch (incomingReader.read()) {
+                        case SEND_BLOCKS:
+                            JSONArray jsonArray = new JSONArray();
+                            List<DummyItem> wordBlocks = postgresJuggler.getWordBlocks();
+                            for (DummyItem localDummy : wordBlocks) {
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put(ID_KEY, localDummy.id);
+                                jsonObject.put(NAME_KEY, localDummy.name);
+                                jsonObject.put(DESCRIPTION_KEY, localDummy.description);
+                                jsonObject.put(TOPIC_KEY, localDummy.topic);
+                                jsonObject.put(LANGUAGE_KEY, localDummy.language);
+                                jsonObject.put(COST_KEY, localDummy.cost);
+                                jsonObject.put(DATA_KEY, localDummy.data);
+                                jsonArray.put(jsonObject);
 
-                                }
-                                outgoingWriter.write(jsonArray.toString());
-                                break;
-                            case SEND_TOPICS:
-                                System.out.println("\n\n\n\n\n\n\n\n" + SEND_TOPICS);
-                                break;
-                            case SEND_LANGUAGES:
-                                List<String> languages = postgresJuggler.getLanguages();
-                                for (String language : languages) {
-                                    outgoingWriter.write( language + "\n");
-                                    System.out.println(language);
-                                }
-                                break;
-                        }
-                        //incomingReader.close();
-                        outgoingWriter.flush();
-                        outgoingWriter.close();
+                            }
+                            outgoingWriter.write(jsonArray.toString());
+                            break;
+                        case SEND_TOPICS:
+                            System.out.println("\n\n\n\n\n\n\n\n" + SEND_TOPICS);
+                            break;
+                        case SEND_LANGUAGES:
+                            List<String> languages = postgresJuggler.getLanguages();
+                            for (String language : languages) {
+                                outgoingWriter.write( language + "\n");
+                                System.out.println(language);
+                            }
+                            break;
                     }
+                    //incomingReader.close();
+                    outgoingWriter.flush();
+                    outgoingWriter.close();
+                }
             } catch (IOException e) {
                 System.err.println(e);
             } catch (SQLException ex) {
