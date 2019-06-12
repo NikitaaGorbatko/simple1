@@ -1,9 +1,7 @@
 import dummy.DummyItem;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONWriter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,9 +43,9 @@ public class MainForm extends JFrame {
         int y = (int) ((dimension.getHeight() - getHeight()) / 2);
         setLocation(x, y);
         try {
-            ArrayList<String> languages = postgresJuggler.getLanguages();
-            for (String language : languages) {
-                languagesBox.addItem(language);
+            ArrayList<Language> languages = postgresJuggler.getLanguages();
+            for (Language language : languages) {
+                languagesBox.addItem(language.getLanguage());
             }
             ArrayList<String> topics = postgresJuggler.getTopics();
             for (String topic : topics) {
@@ -175,6 +173,8 @@ public class MainForm extends JFrame {
         private static final String LANGUAGE_KEY = "language";
         private static final String COST_KEY = "cost";
         private static final String DATA_KEY = "data";
+        private static final String LANG_NAME = "lang";
+        private static final String LANG_KEY = "lang_key";
 
         private ServerSocket serverSocket;
         private BufferedReader incomingReader;
@@ -192,7 +192,7 @@ public class MainForm extends JFrame {
                     while(!incomingReader.ready()) { }
                     switch (incomingReader.read()) {
                         case SEND_BLOCKS:
-                            JSONArray jsonArray = new JSONArray();
+                            JSONArray blocksArrayList = new JSONArray();
                             List<DummyItem> wordBlocks = postgresJuggler.getWordBlocks();
                             for (DummyItem localDummy : wordBlocks) {
                                 JSONObject jsonObject = new JSONObject();
@@ -203,20 +203,32 @@ public class MainForm extends JFrame {
                                 jsonObject.put(LANGUAGE_KEY, localDummy.language);
                                 jsonObject.put(COST_KEY, localDummy.cost);
                                 jsonObject.put(DATA_KEY, localDummy.data);
-                                jsonArray.put(jsonObject);
+                                blocksArrayList.put(jsonObject);
 
                             }
-                            outgoingWriter.write(jsonArray.toString());
+                            outgoingWriter.write(blocksArrayList.toString());
                             break;
                         case SEND_TOPICS:
                             System.out.println("\n\n\n\n\n\n\n\n" + SEND_TOPICS);
                             break;
                         case SEND_LANGUAGES:
-                            List<String> languages = postgresJuggler.getLanguages();
-                            for (String language : languages) {
-                                outgoingWriter.write( language + "\n");
-                                System.out.println(language);
+
+
+                            JSONArray langArrayList = new JSONArray();
+                            ArrayList<Language> languages = postgresJuggler.getLanguages();
+                            for (Language localLang : languages) {
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put(LANG_NAME, localLang.getLanguage());
+                                jsonObject.put(LANG_KEY, localLang.getKey());
+                                langArrayList.put(jsonObject);
                             }
+                            outgoingWriter.write(langArrayList.toString());
+
+                            /*ArrayList<Language> languagesArray = postgresJuggler.getLanguages();
+                            for (Language language : languagesArray) {
+                                outgoingWriter.write( language + "\n");
+                                System.out.println(language.getLanguage() + " " + language.getKey());
+                            }*/
                             break;
                     }
                     //incomingReader.close();

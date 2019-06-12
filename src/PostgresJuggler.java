@@ -36,26 +36,27 @@ public class PostgresJuggler {
         return topicsArrayList;
     }
 
-    public ArrayList<String> getLanguages() throws SQLException {
+    public ArrayList<Language> getLanguages() throws SQLException {
         checkStatement();
         connection.setAutoCommit(false);
-        ArrayList<String> topicsArrayList = new ArrayList<>();
+        ArrayList<Language> langsArray = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM public.languages;");
         while (resultSet.next())
         {
-            topicsArrayList.add(resultSet.getString(1));
+            langsArray.add(new Language(resultSet.getString(1), resultSet.getString(2)));
         }
         connection.setAutoCommit(true);
         resultSet.close();
         statement.close();
-        return topicsArrayList;
+        return langsArray;
     }
 
     public void createTables() throws SQLException {
         checkStatement();
 
         statement.execute("CREATE TABLE IF NOT EXISTS languages (" +
-                "lang VARCHAR(100) PRIMARY KEY);\n");
+                "lang VARCHAR(100) PRIMARY KEY," +
+                "key VARCHAR(5));\n");
 
         statement.execute("CREATE TABLE IF NOT EXISTS topics (" +
                 "top VARCHAR(100) UNIQUE NOT NULL PRIMARY KEY);\n");
