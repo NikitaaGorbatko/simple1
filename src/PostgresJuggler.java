@@ -2,7 +2,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import dummy.DummyItem;
+import dummy.WordBlock;
 
 public class PostgresJuggler {
     private final String URL = "jdbc:postgresql://localhost/postgres?user=postgres&password=1";
@@ -72,6 +72,14 @@ public class PostgresJuggler {
             "data TEXT[] NOT NULL,\n" +
             "cost INTEGER);\n");
 
+        statement.execute("CREATE TABLE IF NOT EXISTS versionTable (" +
+                "version SERIAL PRIMARY KEY);\n");
+
+       /* statement.execute("CREATE OR REPLACE TRIGGER checker AFTER INSERT OR DELETE OR UPDATE ON languages" +
+                "FOR EACH ROW\n");*/
+
+
+
         statement.close();
     }
 
@@ -90,14 +98,14 @@ public class PostgresJuggler {
         return baseOfLanguage;
     }
 
-    public List<DummyItem> getWordBlocks() throws SQLException {
+    public List<WordBlock> getWordBlocks() throws SQLException {
         checkStatement();
         connection.setAutoCommit(false);
-        List<DummyItem> wordBlocks = new ArrayList<>();
+        List<WordBlock> wordBlocks = new ArrayList<>();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM word_sets;");
         while (resultSet.next())
         {
-            wordBlocks.add(new DummyItem(resultSet.getString(1),
+            wordBlocks.add(new WordBlock(resultSet.getString(1),
                     resultSet.getString(4),
                     resultSet.getString(5),
                     resultSet.getString(3),

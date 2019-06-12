@@ -1,4 +1,4 @@
-import dummy.DummyItem;
+import dummy.WordBlock;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -193,8 +193,8 @@ public class MainForm extends JFrame {
                     switch (incomingReader.read()) {
                         case SEND_BLOCKS:
                             JSONArray blocksArrayList = new JSONArray();
-                            List<DummyItem> wordBlocks = postgresJuggler.getWordBlocks();
-                            for (DummyItem localDummy : wordBlocks) {
+                            List<WordBlock> wordBlocks = postgresJuggler.getWordBlocks();
+                            for (WordBlock localDummy : wordBlocks) {
                                 JSONObject jsonObject = new JSONObject();
                                 jsonObject.put(ID_KEY, localDummy.id);
                                 jsonObject.put(NAME_KEY, localDummy.name);

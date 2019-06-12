@@ -1,6 +1,4 @@
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 
 public class Main {
@@ -14,7 +12,6 @@ public class Main {
                 try {
                     MainForm mainForm = new MainForm(new PostgresJuggler());
                     mainForm.setVisible(true);
-
                 } catch (SQLException ex) {
 
                 }
